@@ -4,15 +4,17 @@ import re
 import xlwt
 
 
-dataDir = 'test'
+dataDir = '8.20'
 NUMBER_OF_CLASS = 5
 
 
 def numberSplit(txt):
-    res = re.findall(r"X:(.*) Y:(.*) P:(.*)", txt)
+    res = re.findall(r"X:(.*)mY:(.*)mP:(.*)dB", txt)
     X = res[0][0]
     Y = res[0][1]
     Z = res[0][2]
+    if "0.00" in X or "0.00" in Y or "0.00" in Z:
+        return 0
     result = X + " " + Y + " " + Z + '\n'
     return result
 
@@ -33,15 +35,16 @@ def makeExl(filename):
         B = ""
         C = ""
         for line in lines:
-            if line[4] == '0' and a < NUMBER_OF_CLASS:
+            line = line.replace(" ", "")
+            if line[4] == '0' and a < NUMBER_OF_CLASS and numberSplit(line) != 0:
                 A += numberSplit(line)
                 a += 1
 
-            elif line[4] == '1' and b < NUMBER_OF_CLASS:
+            elif line[4] == '1' and b < NUMBER_OF_CLASS and numberSplit(line) != 0:
                 B += numberSplit(line)
                 b += 1
 
-            elif line[4] == '2' and c < NUMBER_OF_CLASS:
+            elif line[4] == '2' and c < NUMBER_OF_CLASS and numberSplit(line) != 0:
                 C += numberSplit(line)
                 c += 1
 
@@ -70,10 +73,11 @@ def makeExl(filename):
             exlX += 1
             exlY = 0
 
-        exlFile.save('RES.xls')
-        print(filename + '完成')
+        exlFile.save(dataDir+".xls")
+        # print(filename + '完成')
 
 
+print(dataDir)
 exlFile = xlwt.Workbook(encoding='utf-8', style_compression=0)
 for files in os.listdir(dataDir):
     makeExl(files)
